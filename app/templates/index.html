@@ -237,13 +237,11 @@
                     <div class="custom-loader" id="mainSpinner"></div>
                 </div>
             </div>
-                <div class="col-md-6">
-                    <div id="zoomWindow">
-                        <img id="zoomImage" alt="Area ingrandita">
-            </div>
-            </div>
-        </div>
-    </div>
+            <div class="col-md-6">
+                <div id="zoomWindow">
+                    <img id="zoomImage" alt="Area ingrandita">
+                    <div class="custom-loader" id="zoomSpinner"></div>
+                </div>
             </div>
         </div>
         <div class="row mb-4">
@@ -447,10 +445,14 @@ const themeToggleBtn = document.getElementById('themeToggleBtn');
             uploadedImage.addEventListener('click', function(e) {
                 if (!currentImageData) return;
                 const rect = uploadedImage.getBoundingClientRect();
+                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const offsetLeft = rect.left + scrollLeft;
+                const offsetTop = rect.top + scrollTop;
                 const scaleX = uploadedImage.naturalWidth / uploadedImage.width;
                 const scaleY = uploadedImage.naturalHeight / uploadedImage.height;
-                const x = Math.round((e.clientX - rect.left) * scaleX);
-                const y = Math.round((e.clientY - rect.top) * scaleY);
+                const x = Math.round((e.pageX - offsetLeft) * scaleX);
+                const y = Math.round((e.pageY - offsetTop) * scaleY);
                 lastClickX = x;
                 lastClickY = y;
                 enhanceImage(x, y);
@@ -501,8 +503,10 @@ const themeToggleBtn = document.getElementById('themeToggleBtn');
                 const isDarkMode = document.body.classList.contains('dark-mode');
                 
                 // Update icon
-                const icon = this.nextElementSibling.querySelector('i');
-                icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+                const iconElement = document.querySelector('.form-check-label[for="themeToggleBtn"] i');
+                if (iconElement) {
+                    iconElement.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+                }
                 
                 // Save preference
                 localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
@@ -513,9 +517,12 @@ const themeToggleBtn = document.getElementById('themeToggleBtn');
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeToggleBtn').checked = true;
-                document.querySelector('#themeToggleBtn + label i').className = 'fas fa-sun';
+                const iconElement = document.querySelector('.form-check-label[for="themeToggleBtn"] i');
+                if (iconElement) {
+                    iconElement.className = 'fas fa-sun';
+                }
             }
         });
     </script>
 </body>
-</html> 
+</html>
