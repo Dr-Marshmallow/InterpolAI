@@ -27,7 +27,6 @@ Un'applicazione web per l'ingrandimento avanzato delle immagini oltre i limiti c
 - NumPy
 - Pillow
 - (Opzionale) Modello EDSR per super-risoluzione
-- Docker (opzionale)
 
 ## Installazione manuale
 
@@ -61,20 +60,6 @@ Un'applicazione web per l'ingrandimento avanzato delle immagini oltre i limiti c
 
 6. Apri il browser su [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-## Utilizzo con Docker
-
-1. Costruisci l'immagine:
-   ```bash
-   docker build -t interpolai .
-   ```
-
-2. Avvia il container:
-   ```bash
-   docker run -p 5000:5000 interpolai
-   ```
-
-3. Apri il browser su [http://127.0.0.1:5000](http://127.0.0.1:5000)
-
 ## Struttura del progetto
 
 ```
@@ -93,7 +78,6 @@ InterpolAI/
 │       └── index.html
 ├── requirements.txt
 ├── run.py
-├── Dockerfile
 └── README.md
 ```
 
