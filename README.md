@@ -6,32 +6,39 @@ Un'applicazione web per l'ingrandimento avanzato delle immagini oltre i limiti c
 
 - Caricamento di immagini (JPG, JPEG, PNG)
 - Interfaccia interattiva per selezionare aree specifiche dell'immagine
-- Zoom avanzato con multiple tecniche di interpolazione:
+- Zoom avanzato fino a 15x con tecniche di interpolazione:
   - Interpolazione bicubica
   - Interpolazione Lanczos
-  - Super-risoluzione basata su reti neurali (EDSR)
-- Elaborazione di bordi migliorata con maschera di contrasto
-- Interfaccia utente intuitiva e responsive
+  - Super-risoluzione (se disponibile modello EDSR)
+- Miglioramento dei dettagli e riduzione degli artefatti
+- **Pannello di controllo** per:
+  - Luminosità
+  - Contrasto
+  - Nitidezza
+  - Saturazione
+- **Tutte le regolazioni sono applicate in tempo reale**
+- Layout moderno: immagine originale e area ingrandita affiancate, controlli sotto
 
 ## Requisiti
 
 - Python 3.7+
 - Flask
 - OpenCV
-- TensorFlow
 - NumPy
 - Pillow
+- (Opzionale) Modello EDSR per super-risoluzione
+- Docker (opzionale)
 
-## Installazione
+## Installazione manuale
 
-1. Clonare il repository:
-   ```
+1. Clona il repository:
+   ```bash
    git clone https://github.com/tuoutente/InterpolAI.git
    cd InterpolAI
    ```
 
-2. Creare e attivare un ambiente virtuale (opzionale ma raccomandato):
-   ```
+2. (Opzionale) Crea e attiva un ambiente virtuale:
+   ```bash
    python -m venv env
    # Su Windows
    env\Scripts\activate
@@ -39,30 +46,34 @@ Un'applicazione web per l'ingrandimento avanzato delle immagini oltre i limiti c
    source env/bin/activate
    ```
 
-3. Installare le dipendenze:
-   ```
+3. Installa le dipendenze:
+   ```bash
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
-4. Scaricare i modelli pre-addestrati (opzionale):
-   - Per utilizzare la funzionalità di super-risoluzione avanzata, scaricare il modello pre-addestrato EDSR e posizionarlo nella cartella `app/models/`.
-   - Il percorso del modello dovrebbe essere `app/models/EDSR_x4.pb` o `app/models/edsr_model.h5`
-   - Se non disponibile, l'app utilizzerà tecniche di interpolazione tradizionali.
+4. (Opzionale) Scarica il modello EDSR pre-addestrato e posizionalo in `app/models/EDSR_x4.pb` per la super-risoluzione avanzata.
 
-## Utilizzo
-
-1. Avviare l'applicazione:
-   ```
+5. Avvia l'applicazione:
+   ```bash
    python run.py
    ```
 
-2. Aprire un browser e navigare a `http://127.0.0.1:5000`
+6. Apri il browser su [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-3. Caricare un'immagine usando il pulsante "Carica"
+## Utilizzo con Docker
 
-4. Fare clic su qualsiasi punto dell'immagine per ingrandire quell'area
+1. Costruisci l'immagine:
+   ```bash
+   docker build -t interpolai .
+   ```
 
-5. Utilizzare lo slider per regolare il livello di zoom
+2. Avvia il container:
+   ```bash
+   docker run -p 5000:5000 interpolai
+   ```
+
+3. Apri il browser su [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ## Struttura del progetto
 
@@ -82,19 +93,21 @@ InterpolAI/
 │       └── index.html
 ├── requirements.txt
 ├── run.py
+├── Dockerfile
 └── README.md
 ```
 
-## Tecnologie di interpolazione
+## Funzionalità principali
 
-L'applicazione utilizza diverse tecniche di interpolazione a seconda del livello di zoom:
+- **Zoom selettivo**: clicca su un punto dell'immagine per ingrandirlo
+- **Controlli in tempo reale**: modifica luminosità, contrasto, nitidezza, saturazione e vedi subito il risultato
+- **Layout responsive**: immagini affiancate, controlli sotto
+- **Nessun reload manuale**: ogni modifica aggiorna subito l'area ingrandita
 
-1. **Zoom basso (≤ 2x)**: Interpolazione bicubica
-2. **Zoom medio (≤ 4x)**: Interpolazione Lanczos (alta qualità)
-3. **Zoom alto (> 4x)**: Super-risoluzione basata su reti neurali (EDSR)
-
-Se i modelli di super-risoluzione non sono disponibili, l'applicazione utilizzerà automaticamente le tecniche di interpolazione tradizionali.
-
-## Licenza
-
-MIT 
+## Note
+- Se vuoi usare la super-risoluzione EDSR, scarica il modello pre-addestrato e posizionalo in `app/models/EDSR_x4.pb`.
+- Se hai problemi con Pillow su Windows, aggiorna pip e installa Pillow separatamente:
+  ```bash
+  python -m pip install --upgrade pip
+  pip install Pillow
+  ```
