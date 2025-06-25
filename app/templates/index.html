@@ -4,6 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InterpolAI - Super Resolution Image Viewer</title>
+    <style>
+        .dark-mode {
+            --bs-body-bg: #121212;
+            --bs-body-color: #e0e0e0;
+            --bs-border-color: #333;
+            color: var(--bs-body-color);
+            background-color: var(--bs-body-bg) !important;
+        }
+        .dark-mode .header {
+            background: linear-gradient(135deg, #1f262d, #2c3e50);
+            color: white;
+        }
+        .dark-mode .controls,
+        .dark-mode .card,
+        .dark-mode .list-group-item {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+        .dark-mode .badge {
+            color: #1e1e1e;
+        }
+        .dark-mode .badge.bg-warning {
+            background-color: #b08d57;
+        }
+        .dark-mode .badge.bg-info {
+            background-color: #4fc3f7;
+        }
+        .dark-mode .badge.bg-success {
+            background-color: #66bb6a;
+        }
+        .dark-mode .badge.bg-danger {
+            background-color: #ef5350;
+        }
+        .dark-mode .form-control,
+        .dark-mode .form-select {
+            background-color: #333;
+            color: #ccc;
+            border-color: #555;
+        }
+        .dark-mode .btn-secondary {
+            background-color: #555;
+            border-color: #555;
+        }
+        .dark-mode .btn-secondary:hover {
+            background-color: #666;
+            border-color: #666;
+        }
+        
+        /* Toggle switch styling */
+        .form-check-input {
+            height: 1.5em;
+            width: 3em;
+        }
+        .form-check-input:checked {
+            background-color: #4fc3f7;
+            border-color: #4fc3f7;
+        }
+        .form-check-label i {
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+        .dark-mode .form-check-label {
+            color: #e0e0e0 !important;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -12,10 +77,11 @@
             color: #212529;
         }
         .header {
-            background-color: #343a40;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .container {
             max-width: 1200px;
@@ -25,11 +91,17 @@
             overflow: hidden;
             width: 100%;
             height: 400px;
-            border: 2px solid #dee2e6;
-            border-radius: 5px;
-            background-color: #e9ecef;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            background: #f8f9fa;
             cursor: crosshair;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #imageContainer:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
         #uploadedImage {
             max-width: 100%;
@@ -38,13 +110,19 @@
             margin: auto;
         }
         #zoomWindow {
-            border: 2px solid #007bff;
+            border: 2px solid rgba(13,110,253,0.3);
             width: 100%;
             height: 400px;
             overflow: hidden;
-            border-radius: 5px;
+            border-radius: 8px;
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        #zoomWindow:hover {
+            border-color: #0d6efd;
+            box-shadow: 0 4px 8px rgba(13,110,253,0.1);
         }
         #zoomImage {
             position: absolute;
@@ -56,19 +134,36 @@
         }
         .controls {
             background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .controls:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
         .zoom-controls {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
+            padding: 8px;
+            background: rgba(13,110,253,0.05);
+            border-radius: 8px;
         }
         .upload-form {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+        }
+        .param-preview {
+            margin-top: 8px;
+            border-radius: 2px;
+            opacity: 0.7;
+        }
+        .badge {
+            min-width: 40px;
+            text-align: center;
+            font-family: monospace;
         }
         .custom-loader {
             position: absolute;
@@ -103,12 +198,24 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1>InterpolAI</h1>
-            <p class="lead">Advanced Image Super-Resolution and Zoom Tool</p>
+<header class="header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1>InterpolAI</h1>
+                <p class="lead">Advanced Image Super-Resolution and Zoom Tool</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="form-check form-switch d-inline-block">
+                    <input class="form-check-input" type="checkbox" id="themeToggleBtn">
+                    <label class="form-check-label text-white" for="themeToggleBtn" style="cursor: pointer">
+                        <i class="fas fa-moon"></i>
+                    </label>
+                </div>
+            </div>
         </div>
-    </header>
+    </div>
+</header>
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -130,11 +237,13 @@
                     <div class="custom-loader" id="mainSpinner"></div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div id="zoomWindow">
-                    <img id="zoomImage" alt="Area ingrandita">
-                    <div class="custom-loader" id="zoomSpinner"></div>
-                </div>
+                <div class="col-md-6">
+                    <div id="zoomWindow">
+                        <img id="zoomImage" alt="Area ingrandita">
+            </div>
+            </div>
+        </div>
+    </div>
             </div>
         </div>
         <div class="row mb-4">
@@ -152,32 +261,36 @@
                         <div class="col-md-6">
                             <h5>Parametri immagine</h5>
                             <div class="mb-2">
-                                <label for="brightnessRange" class="form-label d-flex justify-content-between">
-                                    <span>Luminosità:</span>
-                                    <span id="brightnessValue">0</span>
+                                <label for="brightnessRange" class="form-label d-flex justify-content-between align-items-center">
+                                    <span class="me-2"><i class="fas fa-sun text-warning"></i> Luminosità:</span>
+                                    <span id="brightnessValue" class="badge bg-warning text-dark">0</span>
                                 </label>
                                 <input type="range" class="form-range" min="-100" max="100" step="5" id="brightnessRange" value="0">
+                                <div class="param-preview" style="height: 4px; background: linear-gradient(90deg, #000 0%, #444 50%, #fff 100%);"></div>
                             </div>
                             <div class="mb-2">
-                                <label for="contrastRange" class="form-label d-flex justify-content-between">
-                                    <span>Contrasto:</span>
-                                    <span id="contrastValue">0</span>
+                                <label for="contrastRange" class="form-label d-flex justify-content-between align-items-center">
+                                    <span class="me-2"><i class="fas fa-adjust text-info"></i> Contrasto:</span>
+                                    <span id="contrastValue" class="badge bg-info">0</span>
                                 </label>
                                 <input type="range" class="form-range" min="-100" max="100" step="5" id="contrastRange" value="0">
+                                <div class="param-preview" style="height: 4px; background: linear-gradient(90deg, #fff 0%, #888 50%, #000 100%);"></div>
                             </div>
                             <div class="mb-2">
-                                <label for="sharpnessRange" class="form-label d-flex justify-content-between">
-                                    <span>Nitidezza:</span>
-                                    <span id="sharpnessValue">0</span>
+                                <label for="sharpnessRange" class="form-label d-flex justify-content-between align-items-center">
+                                    <span class="me-2"><i class="fas fa-mountain text-success"></i> Nitidezza:</span>
+                                    <span id="sharpnessValue" class="badge bg-success">0</span>
                                 </label>
                                 <input type="range" class="form-range" min="0" max="200" step="10" id="sharpnessRange" value="0">
+                                <div class="param-preview" style="height: 4px; background: linear-gradient(90deg, rgba(0,0,0,0.3) 0%, transparent 50%, rgba(0,0,0,0.8) 100%);"></div>
                             </div>
                             <div class="mb-2">
-                                <label for="saturationRange" class="form-label d-flex justify-content-between">
-                                    <span>Saturazione:</span>
-                                    <span id="saturationValue">0</span>
+                                <label for="saturationRange" class="form-label d-flex justify-content-between align-items-center">
+                                    <span class="me-2"><i class="fas fa-tint text-danger"></i> Saturazione:</span>
+                                    <span id="saturationValue" class="badge bg-danger">0</span>
                                 </label>
                                 <input type="range" class="form-range" min="-100" max="100" step="5" id="saturationRange" value="0">
+                                <div class="param-preview" style="height: 4px; background: linear-gradient(90deg, #888 0%, #f00 50%, #ff0 100%);"></div>
                             </div>
                             <div class="mb-2">
                                 <button class="btn btn-sm btn-secondary" id="resetParams">Ripristina valori</button>
@@ -193,7 +306,17 @@
             <p>&copy; 2023 InterpolAI - Tutti i diritti riservati</p>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Initialize Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const imageUpload = document.getElementById('imageUpload');
@@ -216,12 +339,15 @@
             const sharpnessValue = document.getElementById('sharpnessValue');
             const saturationValue = document.getElementById('saturationValue');
             const resetParamsBtn = document.getElementById('resetParams');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+
             function updateParamDisplay() {
                 brightnessValue.textContent = imageParams.brightness;
                 contrastValue.textContent = imageParams.contrast;
                 sharpnessValue.textContent = imageParams.sharpness;
                 saturationValue.textContent = imageParams.saturation;
             }
+
             brightnessRange.addEventListener('input', function() {
                 imageParams.brightness = parseInt(this.value);
                 brightnessValue.textContent = imageParams.brightness;
@@ -229,6 +355,7 @@
                     enhanceImage(lastClickX, lastClickY);
                 }
             });
+
             contrastRange.addEventListener('input', function() {
                 imageParams.contrast = parseInt(this.value);
                 contrastValue.textContent = imageParams.contrast;
@@ -236,6 +363,7 @@
                     enhanceImage(lastClickX, lastClickY);
                 }
             });
+
             sharpnessRange.addEventListener('input', function() {
                 imageParams.sharpness = parseInt(this.value);
                 sharpnessValue.textContent = imageParams.sharpness;
@@ -243,6 +371,7 @@
                     enhanceImage(lastClickX, lastClickY);
                 }
             });
+
             saturationRange.addEventListener('input', function() {
                 imageParams.saturation = parseInt(this.value);
                 saturationValue.textContent = imageParams.saturation;
@@ -250,6 +379,7 @@
                     enhanceImage(lastClickX, lastClickY);
                 }
             });
+
             resetParamsBtn.addEventListener('click', function() {
                 imageParams = { brightness: 0, contrast: 0, sharpness: 0, saturation: 0 };
                 brightnessRange.value = imageParams.brightness;
@@ -261,6 +391,7 @@
                     enhanceImage(lastClickX, lastClickY);
                 }
             });
+
             zoomRange.addEventListener('input', function() {
                 currentZoomLevel = parseFloat(this.value);
                 zoomValue.textContent = currentZoomLevel + 'x';
@@ -268,6 +399,7 @@
                     enhanceImage(lastClickX, lastClickY);
                 }
             });
+
             document.querySelector('.upload-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const file = imageUpload.files[0];
@@ -308,8 +440,10 @@
                     alert('Si è verificato un errore: ' + error);
                 });
             });
+
             let lastClickX = null;
             let lastClickY = null;
+
             uploadedImage.addEventListener('click', function(e) {
                 if (!currentImageData) return;
                 const rect = uploadedImage.getBoundingClientRect();
@@ -321,6 +455,7 @@
                 lastClickY = y;
                 enhanceImage(x, y);
             });
+
             function enhanceImage(x, y) {
                 if (!currentImageData) return;
                 zoomSpinner.style.display = 'block';
@@ -358,6 +493,27 @@
                     zoomImage.style.opacity = '1';
                     alert('Si è verificato un errore: ' + error);
                 });
+            }
+
+            // Dark mode toggle
+            document.getElementById('themeToggleBtn').addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                // Update icon
+                const icon = this.nextElementSibling.querySelector('i');
+                icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+                
+                // Save preference
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            });
+
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggleBtn').checked = true;
+                document.querySelector('#themeToggleBtn + label i').className = 'fas fa-sun';
             }
         });
     </script>

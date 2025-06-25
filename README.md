@@ -1,4 +1,4 @@
-# InterpolAI
+# InterpolAI ![Nuova Versione](https://img.shields.io/badge/Funzionalità-Tema%20Scuro-blue)
 
 Un'applicazione web per l'ingrandimento avanzato delle immagini oltre i limiti classici dello zoom, utilizzando tecniche sofisticate di interpolazione e super-risoluzione.
 
@@ -87,6 +87,18 @@ InterpolAI/
 - **Controlli in tempo reale**: modifica luminosità, contrasto, nitidezza, saturazione e vedi subito il risultato
 - **Layout responsive**: immagini affiancate, controlli sotto
 - **Nessun reload manuale**: ogni modifica aggiorna subito l'area ingrandita
+
+## Funzionalità Avanzate
+
+### Sistema di Temi Colore
+- **Toggle Switch Elegante**: Accessibile direttamente nella barra dell'header
+- **Icone Dinamiche**: Cambio automatico da luna (tema chiaro) a sole (tema scuro)
+- **Salvataggio dello Stato**: Ricorda sempre l'ultimo tema utilizzato grazie al localStorage
+- **Stile Coerente**: Il tema scuro ottimizza i colori di tutta l'interfaccia:
+  - Sfondo scuro e testo chiaro
+  - Personalizzazione dei controlli e delle carte
+  - Gradiente di colore nell'header
+- **Transizioni Fluide**: Passaggio graduale tra i temi
 
 ## Note
 - Se vuoi usare la super-risoluzione EDSR, scarica il modello pre-addestrato e posizionalo in `app/models/EDSR_x4.pb`.
